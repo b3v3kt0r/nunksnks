@@ -1,0 +1,8 @@
+__pycache__/
+___init___.py
+*.pyc
+venv
+.venv
+env
+.env
+users
