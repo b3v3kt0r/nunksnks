@@ -2,6 +2,7 @@ from flask import Flask
 import threading
 import requests
 import time
+import os
 
 app = Flask(__name__)
 
@@ -16,10 +17,10 @@ def keep_alive():
             print("Keep-alive ping sent!")
         except Exception as e:
             print(f"Keep-alive error: {e}")
-        time.sleep(300)
+        time.sleep(60)
 
 
 threading.Thread(target=keep_alive).start()
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+port = int(os.environ.get("PORT", 8000))
+app.run(host="0.0.0.0", port=port)
