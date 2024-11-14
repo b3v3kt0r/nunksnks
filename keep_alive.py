@@ -22,5 +22,5 @@ def keep_alive():
 
 threading.Thread(target=keep_alive).start()
 
-port = int(os.environ.get("PORT", 8000))
-app.run(host="0.0.0.0", port=port)
+# port = int(os.environ.get("PORT", 8080))
+app.run(host="0.0.0.0", port=8080)
