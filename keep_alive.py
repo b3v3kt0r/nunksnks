@@ -20,7 +20,6 @@ def keep_alive():
         time.sleep(60)
 
 
-threading.Thread(target=keep_alive).start()
-
-# port = int(os.environ.get("PORT", 8080))
-app.run(host="0.0.0.0", port=8080)
+def run_flask():
+    threading.Thread(target=keep_alive, daemon=True).start()
+    app.run(host="0.0.0.0", port=8080)

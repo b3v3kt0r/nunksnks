@@ -1,4 +1,5 @@
 import datetime
+import threading
 import telebot
 import os
 from dotenv import load_dotenv
@@ -8,9 +9,8 @@ from pymongo.server_api import ServerApi
 
 import ai_helper
 from helpers import is_cyrillic_only
-from keep_alive import keep_alive
+from keep_alive import run_flask
 
-keep_alive()
 load_dotenv()
 
 bot = telebot.TeleBot(os.environ.get("TELEGRAM_API_KEY"))
@@ -69,4 +69,12 @@ def info(message):
     bot.send_message(message.chat.id, response)
 
 
-bot.infinity_polling()
+def start_flask_thread():
+    threading.Thread(target=run_flask, daemon=True).start()
+
+def start_bot():
+    bot.infinity_polling()
+
+if __name__ == "__main__":
+    start_flask_thread()
+    start_bot()
