@@ -8,7 +8,9 @@ from pymongo.server_api import ServerApi
 
 import ai_helper
 from helpers import is_cyrillic_only
+from keep_alive import keep_alive
 
+keep_alive()
 load_dotenv()
 
 bot = telebot.TeleBot(os.environ.get("TELEGRAM_API_KEY"))
