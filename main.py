@@ -10,7 +10,7 @@ from pymongo.server_api import ServerApi
 import ai_helper
 from helpers import is_cyrillic_only
 from keep_alive import run_flask
-from parser import parse_news_playua
+from parser import parse_news_playua, parse_steam_sale_date
 from weather_checker import get_weather
 
 load_dotenv()
@@ -29,7 +29,8 @@ def start_message(message):
     markup = telebot.types.ReplyKeyboardMarkup()
     get_weather = telebot.types.KeyboardButton("Get the weather")
     get_articles = telebot.types.KeyboardButton("Get PlayUA top articles")
-    markup.row(get_weather, get_articles)
+    get_steam_sale = telebot.types.KeyboardButton("Steam sale")
+    markup.row(get_weather, get_articles, get_steam_sale)
     leave_note = telebot.types.KeyboardButton("Leave a note")
     get_notes = telebot.types.KeyboardButton("My notes")
     markup.row(leave_note, get_notes)
@@ -83,6 +84,12 @@ def get_playua_articles(message):
         articles_to_send += f"{counter}. {article}\n"
     articles_to_send += "<a href='https://playua.net/'><b>PlayUA website</b></a>"
     bot.reply_to(message, articles_to_send, parse_mode="HTML")
+
+
+@bot.message_handler(func=lambda message: message.text == "Steam sale")
+def find_out_steam_sale(message):
+    sale = parse_steam_sale_date()
+    bot.reply_to(message, sale)
 
 
 @bot.message_handler(func=lambda message: message.text == "My notes")
