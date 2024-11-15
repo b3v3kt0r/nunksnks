@@ -1,15 +1,16 @@
 import datetime
 import threading
-import telebot
 import os
 from dotenv import load_dotenv
 
+import telebot
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 import ai_helper
 from helpers import is_cyrillic_only
 from keep_alive import run_flask
+from parser import parse_news_playua
 from weather_checker import get_weather
 
 load_dotenv()
@@ -26,15 +27,19 @@ def start_message(message):
     nickname = message.from_user.first_name or message.username or message.from_user.last_name
 
     markup = telebot.types.ReplyKeyboardMarkup()
+    get_weather = telebot.types.KeyboardButton("Get the weather")
+    get_articles = telebot.types.KeyboardButton("Get PlayUA top articles")
+    markup.row(get_weather, get_articles)
+    leave_note = telebot.types.KeyboardButton("Leave a note")
+    get_notes = telebot.types.KeyboardButton("My notes")
+    markup.row(leave_note, get_notes)
     markup.add(telebot.types.KeyboardButton("Who's creator of this godness?"))
     markup.add(telebot.types.KeyboardButton("Leave the feedback"))
-    markup.add(telebot.types.KeyboardButton("Get the weather"))
 
     bot.reply_to(message, f"Hello, {nickname}! My name is Nunksnks.", reply_markup=markup)
-    # bot.register_next_step_handler(message, on_click)
 
 
-@bot.message_handler()
+@bot.message_handler(regexp=r"^(Who\'s creator of this godness\?|Leave the feedback|Get the weather|Leave a note)$")
 def buttons(message):
     if message.text == "Who's creator of this godness?":
         bot.reply_to(message, "My creator's name is The Great Stanislav")
@@ -47,6 +52,48 @@ def buttons(message):
     elif message.text == "Get the weather":
         bot.reply_to(message, "Write name of the city")
         bot.register_next_step_handler(message, city_name)
+    elif message.text == "Leave a note":
+        bot.reply_to(message, "Please, write it in the chat")
+        bot.register_next_step_handler(message, save_note)
+
+
+def save_note(message):
+    nickname = message.from_user.first_name or message.username or message.from_user.last_name
+    user_id = message.from_user.id
+
+    collection = db["notes"]
+    message_data = {
+        "user": nickname,
+        "user_id": user_id,
+        "note": message.text,
+        "date_time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    collection.insert_one(message_data)
+
+    bot.reply_to(message, "Nice one! You can check all your notes by writing \"My notes\" in the chat")
+
+
+@bot.message_handler(func=lambda message: message.text == "Get PlayUA top articles")
+def get_playua_articles(message):
+    articles = parse_news_playua()
+    articles_to_send = ""
+    counter = 0
+    for article in articles:
+        counter += 1
+        articles_to_send += f"{counter}. {article}\n"
+    articles_to_send += "<a href='https://playua.net/'><b>PlayUA website</b></a>"
+    bot.reply_to(message, articles_to_send, parse_mode="HTML")
+
+
+@bot.message_handler(func=lambda message: message.text == "My notes")
+def get_all_notes(message):
+    user_id = message.from_user.id
+
+    collection = db["notes"]
+    notes = list(collection.find({"user_id": user_id}))
+
+    for note in notes:
+        bot.send_message(message.chat.id, note["note"])
 
 
 def city_name(message):
@@ -111,9 +158,9 @@ def info(message):
         bot.send_message(message.chat.id, "Fuck you!")
         return 
 
-    # response = ai_helper.auto_replay_for_message(message_text)
-    # bot.send_message(message.chat.id, response)
-    bot.send_message(message.chat.id, "Got it!")
+    response = ai_helper.auto_replay_for_message(message_text)
+    bot.send_message(message.chat.id, response)
+    # bot.send_message(message.chat.id, "Got it!")
 
 def start_flask_thread():
     threading.Thread(target=run_flask, daemon=True).start()
