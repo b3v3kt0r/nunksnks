@@ -25,13 +25,17 @@ def parse_steam_sale_date():
         STEAM_SALES, 
         headers={"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"}).content
     soup = BeautifulSoup(text, "html.parser")
-    
+
     name = soup.select_one("a.text-green-400").text
     date = soup.select_one("p strong:nth-of-type(2)").text
     date_obj = datetime.strptime(date, "%m/%d/%Y")
-    end = date_obj.strftime("%d/%m/%Y")
+    norm_date = date_obj.strftime("%d/%m/%Y")
+    check_sale = soup.select_one("p.text-2xl").text
 
-    if name and date:
-        return f"{name}\nDate of end: {end}"
+    if "is the next" in check_sale:
+        return f"{name}\nDate of start: {norm_date}"
     else:
-        return "There is not sale today!"
+        return f"{name}\nDate of end: {norm_date}"
+
+
+print(parse_steam_sale_date())
