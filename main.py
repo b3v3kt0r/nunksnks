@@ -54,6 +54,36 @@ def feedback(message):
     bot.reply_to(message, "You can leave only posistive feedback or we will find you!", reply_markup=markup)
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def handle_feedback(call):
+    nickname = call.from_user.first_name or call.from_user.username or call.from_user.last_name
+    feedback = call.data
+    user_id = call.from_user.id
+
+    collection = db["feedbacks"]
+
+    message_data = {
+        "user": nickname,
+        "opinion": feedback,
+        "date_time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    collection.update_one(
+        {"user_id": user_id},
+        {"$set": message_data},
+        upsert=True
+    )
+
+    bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+
+    if feedback == "Like":
+        # bot.answer_callback_query(call.id, "Bless you!")
+        bot.send_message(call.message.chat.id, "Bless you!")
+    elif feedback == "Dislike":
+        # bot.answer_callback_query(call.id, "We will find you!")
+        bot.send_message(call.message.chat.id, "We will find you!")
+
+
 @bot.message_handler(func=lambda message: message.text == "Get the weather")
 def weather(message):
         bot.reply_to(message, "Write name of the city")
@@ -116,40 +146,6 @@ def get_all_notes(message):
 
     for note in notes:
         bot.send_message(message.chat.id, note["note"])
-
-
-
-        
-
-@bot.callback_query_handler(func=lambda call: True)
-def handle_feedback(call):
-    nickname = call.from_user.first_name or call.from_user.username or call.from_user.last_name
-    feedback = call.data
-    user_id = call.from_user.id
-
-    collection = db["feedbacks"]
-
-    message_data = {
-        "user": nickname,
-        "opinion": feedback,
-        "date_time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-    collection.update_one(
-        {"user_id": user_id},
-        {"$set": message_data},
-        upsert=True
-    )
-
-    bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-
-    if feedback == "Like":
-        # bot.answer_callback_query(call.id, "Bless you!")
-        bot.send_message(call.message.chat.id, "Bless you!")
-    elif feedback == "Dislike":
-        # bot.answer_callback_query(call.id, "We will find you!")
-        bot.send_message(call.message.chat.id, "We will find you!")
-
 
 
 @bot.message_handler(content_types=["text"])
