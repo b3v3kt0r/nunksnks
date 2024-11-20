@@ -40,23 +40,38 @@ def start_message(message):
     bot.reply_to(message, f"Hello, {nickname}! My name is Nunksnks.", reply_markup=markup)
 
 
-@bot.message_handler(regexp=r"^(Who\'s creator of this godness\?|Leave the feedback|Get the weather|Leave a note)$")
-def buttons(message):
-    if message.text == "Who's creator of this godness?":
-        bot.reply_to(message, "My creator's name is The Great Stanislav")
-    elif message.text == "Leave the feedback":
-        markup = telebot.types.InlineKeyboardMarkup()
-        bt1 = telebot.types.InlineKeyboardButton("I like it!", callback_data="Like")
-        bt2 = telebot.types.InlineKeyboardButton("I'm bad peson!", callback_data="Dislike")
-        markup.add(bt1, bt2)
-        bot.reply_to(message, "You can leave only posistive feedback or we will find you!", reply_markup=markup)
-    elif message.text == "Get the weather":
+@bot.message_handler(func=lambda message: message.text == "Who's creator of this godness?")
+def answer_about_creator(message):
+    bot.reply_to(message, "My creator's name is The Great Stanislav")
+
+
+@bot.message_handler(func=lambda message: message.text == "Leave the feedback")
+def feedback(message):
+    markup = telebot.types.InlineKeyboardMarkup()
+    bt1 = telebot.types.InlineKeyboardButton("I like it!", callback_data="Like")
+    bt2 = telebot.types.InlineKeyboardButton("I'm bad peson!", callback_data="Dislike")
+    markup.add(bt1, bt2)
+    bot.reply_to(message, "You can leave only posistive feedback or we will find you!", reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.text == "Get the weather")
+def weather(message):
         bot.reply_to(message, "Write name of the city")
         bot.register_next_step_handler(message, city_name)
-    elif message.text == "Leave a note":
-        bot.reply_to(message, "Please, write it in the chat")
-        bot.register_next_step_handler(message, save_note)
 
+def city_name(message):
+    city = message.text
+    weather = get_weather(city)
+    bot.reply_to(message, weather)
+
+
+# regexp=r"^(Who\'s creator of this godness\?|Leave the feedback|Get the weather|Leave a note)$"
+
+
+@bot.message_handler(func=lambda message: message.text == "Leave a note")
+def note(message):
+    bot.reply_to(message, "Please, write it in the chat")
+    bot.register_next_step_handler(message, save_note)
 
 def save_note(message):
     nickname = message.from_user.first_name or message.username or message.from_user.last_name
@@ -103,10 +118,7 @@ def get_all_notes(message):
         bot.send_message(message.chat.id, note["note"])
 
 
-def city_name(message):
-    city = message.text
-    weather = get_weather(city)
-    bot.reply_to(message, weather)
+
         
 
 @bot.callback_query_handler(func=lambda call: True)
