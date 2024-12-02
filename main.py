@@ -49,9 +49,9 @@ def answer_about_creator(message):
 def feedback(message):
     markup = telebot.types.InlineKeyboardMarkup()
     bt1 = telebot.types.InlineKeyboardButton("I like it!", callback_data="Like")
-    bt2 = telebot.types.InlineKeyboardButton("I'm bad peson!", callback_data="Dislike")
+    bt2 = telebot.types.InlineKeyboardButton("I'm bad person!", callback_data="Dislike")
     markup.add(bt1, bt2)
-    bot.reply_to(message, "You can leave only posistive feedback or we will find you!", reply_markup=markup)
+    bot.reply_to(message, "You can leave only positive feedback or we will find you!", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: True)
