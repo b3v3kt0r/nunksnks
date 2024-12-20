@@ -21,7 +21,7 @@ def parse_one_article_playua(article):
 
 def parse_news_playua():
     soup = fetch_html(PLAY_UA)
-    
+
     articles = soup.select(".short-article")
     return [parse_one_article_playua(article) for article in articles]
 
