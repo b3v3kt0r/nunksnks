@@ -9,17 +9,10 @@ STEAM_SALES = "https://steambase.io/sales"
 
 
 def fetch_html(url):
-    user_agents = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:115.0) Gecko/20100101 Firefox/115.0",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Safari/605.1.15",
-    ]
-    headers = {"user-agent": random.choice(user_agents)}
-
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()  # Перевірка на помилки
-    soup = BeautifulSoup(response.content, "html.parser")
+    text = requests.get(
+        url, 
+        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"}).content
+    soup = BeautifulSoup(text, "html.parser")
     return soup
 
 
