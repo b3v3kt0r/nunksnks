@@ -225,5 +225,5 @@ def start_bot():
     bot.infinity_polling()
 
 if __name__ == "__main__":
-    # start_flask_thread()
+    start_flask_thread()
     start_bot()
