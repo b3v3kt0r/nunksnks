@@ -54,7 +54,7 @@ def answer_about_creator(message):
     """
     Button that return name of creator.
     """
-    bot.reply_to(message, "My creator's name is The Great Stanislav🤴")
+    bot.reply_to(message, "My creator's name is The Great Stanislav👑")
 
 
 @bot.message_handler(func=lambda message: message.text == "Leave the feedback")
