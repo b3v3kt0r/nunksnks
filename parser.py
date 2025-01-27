@@ -11,6 +11,9 @@ DOU_LVIV_ACTIVITIES = "https://dou.ua/calendar/city/Lviv/"
 
 
 def fetch_html(url):
+    """
+    Function that uses BeautifulSoup for parsing websites.
+    """
     text = requests.get(
         url,
         headers={
@@ -22,10 +25,16 @@ def fetch_html(url):
 
 
 def parse_one_article_playua(article):
+    """
+    Function helper for parsing PlayUA website.
+    """
     return article.select_one(".short-article__info__title").text.strip()
 
 
 def parse_news_playua():
+    """
+    Function that parse PlayUA website.
+    """
     soup = fetch_html(PLAY_UA)
     articles = soup.select(".short-article")
     articles_list = [parse_one_article_playua(article) for article in articles]
@@ -39,6 +48,9 @@ def parse_news_playua():
 
 
 def parse_steam_sale_date():
+    """
+    Function that parse Steam sales website.
+    """
     soup = fetch_html(STEAM_SALES)
 
     try:
@@ -57,6 +69,9 @@ def parse_steam_sale_date():
 
 
 def parse_one_dou_activity(activity):
+    """
+    Function helper for parsing DOU website.
+    """
     def clean_text(text):
         return html.unescape(text.strip()).replace("\xa0", " ")
 
@@ -74,6 +89,9 @@ def parse_one_dou_activity(activity):
 
 
 def parse_dou_for_activities():
+    """
+    Function that parse DOU website.
+    """
     soup = fetch_html(DOU_LVIV_ACTIVITIES)
     activities = soup.select(".b-postcard")
     activities_list = [parse_one_dou_activity(activity) for activity in activities]
