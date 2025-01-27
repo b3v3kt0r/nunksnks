@@ -81,6 +81,6 @@ def parse_dou_for_activities():
     counter = 0
     for activity in activities_list:
         counter += 1
-        activities_to_send += f"<b>{counter}.</b> <b>{activity["name"]}</b>.\n<b>Date:</b> {activity["date"]}\n{activity["description"]}\n<b>Price:</b> {activity["price"]}\n\n"
+        activities_to_send += f"<b>{counter}.</b> <b>{activity['name']}</b>.\n<b>Date:</b> {activity['date']}\n{activity['description']}\n<b>Price:</b> {activity['price']}\n\n"
     activities_to_send += "<a href='https://dou.ua/calendar/city/Lviv/'><b>DOU website</b></a>"
     return activities_to_send
