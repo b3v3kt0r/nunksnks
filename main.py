@@ -49,7 +49,7 @@ def start_message(message):
     bot.reply_to(message, f"Hello, {nickname}! My name is Nunksnks.", reply_markup=markup)
 
 
-@bot.message_handler(func=lambda message: message.text == "Who's creator of this godness?")
+@bot.message_handler(func=lambda message: message.text == "Who's creator of this goodness?")
 def answer_about_creator(message):
     """
     Button that return name of creator.
